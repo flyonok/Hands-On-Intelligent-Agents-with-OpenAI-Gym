@@ -69,9 +69,10 @@ def train(agent, env):
     best_reward = -float('inf')
     for episode in range(MAX_NUM_EPISODES):
         terminated = False
+        truacted = False
         obs, info = env.reset()
         total_reward = 0.0
-        while not terminated or not truacted:
+        while not terminated and not truacted:
             action = agent.get_action(obs)
             next_obs, reward, terminated, truacted, info = env.step(action)
             agent.learn(obs, action, reward, next_obs)
