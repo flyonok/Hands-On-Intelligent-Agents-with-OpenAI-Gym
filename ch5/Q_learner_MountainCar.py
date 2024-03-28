@@ -5,7 +5,7 @@ An easy-to-follow script to train, test and evaluate a Q-learning agent on the M
 problem using the OpenAI Gym. |Praveen Palanisamy
 # Chapter 5, Hands-on Intelligent Agents with OpenAI Gym, 2018
 """
-import gym
+import gymnasium as gym
 import numpy as np
 
 MAX_NUM_EPISODES = 50000
@@ -20,11 +20,16 @@ NUM_DISCRETE_BINS = 30  # Number of bins to Discretize each observation dim
 
 class Q_Learner(object):
     def __init__(self, env):
+        # print(f'observation_space:{env.observation_space}')
+        # print(f'action_space:{env.action_space}')
         self.obs_shape = env.observation_space.shape
         self.obs_high = env.observation_space.high
         self.obs_low = env.observation_space.low
+        # self.obs_high = env.observation_space[1]
+        # self.obs_low = env.observation_space[0]
         self.obs_bins = NUM_DISCRETE_BINS  # Number of bins to Discretize each observation dim
         self.bin_width = (self.obs_high - self.obs_low) / self.obs_bins
+        print(f'obs_high:{self.obs_high}, obs_low:{self.obs_low}, bin_width:{self.bin_width}')
         self.action_shape = env.action_space.n
         # Create a multi-dimensional array (aka. Table) to represent the
         # Q-values
@@ -35,7 +40,12 @@ class Q_Learner(object):
         self.epsilon = 1.0
 
     def discretize(self, obs):
-        return tuple(((obs - self.obs_low) / self.bin_width).astype(int))
+        # print(f'discretize obs:{obs}， obs_low：{self.obs_low}')
+        diff = obs - self.obs_low
+        # print(f'diff:{diff}')
+        result = tuple(( diff / self.bin_width).astype(int))
+        # print(f'discretize: {result}')
+        return result
 
     def get_action(self, obs):
         discretized_obs = self.discretize(obs)
@@ -48,6 +58,7 @@ class Q_Learner(object):
             return np.random.choice([a for a in range(self.action_shape)])
 
     def learn(self, obs, action, reward, next_obs):
+        # print(f'learn obs:{obs}, next_obs:{next_obs}')
         discretized_obs = self.discretize(obs)
         discretized_next_obs = self.discretize(next_obs)
         td_target = reward + self.gamma * np.max(self.Q[discretized_next_obs])
@@ -57,12 +68,12 @@ class Q_Learner(object):
 def train(agent, env):
     best_reward = -float('inf')
     for episode in range(MAX_NUM_EPISODES):
-        done = False
-        obs = env.reset()
+        terminated = False
+        obs, info = env.reset()
         total_reward = 0.0
-        while not done:
+        while not terminated or not truacted:
             action = agent.get_action(obs)
-            next_obs, reward, done, info = env.step(action)
+            next_obs, reward, terminated, truacted, info = env.step(action)
             agent.learn(obs, action, reward, next_obs)
             obs = next_obs
             total_reward += reward
@@ -87,12 +98,14 @@ def test(agent, env, policy):
 
 
 if __name__ == "__main__":
-    env = gym.make('MountainCar-v0')
+    env = gym.make('MountainCar-v0', render_mode='human')
     agent = Q_Learner(env)
     learned_policy = train(agent, env)
     # Use the Gym Monitor wrapper to evalaute the agent and record video
+    from gymnasium.wrappers.monitoring.video_recorder import VideoRecorder
     gym_monitor_path = "./gym_monitor_output"
-    env = gym.wrappers.Monitor(env, gym_monitor_path, force=True)
+    # env = gym.wrappers.Monitor(env, gym_monitor_path, force=True)
+    env = VideoRecorder(env, gym_monitor_path)
     for _ in range(1000):
         test(agent, env, learned_policy)
     env.close()

@@ -2,8 +2,8 @@
 # Simple script to test a box2d environment | Praveen Palanisamy
 # Chapter 3, Hands-on Intelligent Agents with OpenAI Gym, 2018
 
-import gym
-env = gym.make('BipedalWalker-v2')
+import gymnasium as gym
+env = gym.make('BipedalWalker-v3', render_mode="human")
 env.reset()
 for _ in range(1000):
     env.render()

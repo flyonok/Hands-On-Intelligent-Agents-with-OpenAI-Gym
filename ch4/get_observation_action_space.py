@@ -3,8 +3,8 @@
 # Chapter 4, Hands-on Intelligent Agents with OpenAI Gym, 2018
 
 import sys
-import gym
-from gym.spaces import *
+import gymnasium as gym
+from gymnasium.spaces import *
 
 def print_spaces(space):
     print(space)
