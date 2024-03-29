@@ -6,7 +6,7 @@ from torch.autograd import Variable
 import numpy as np 
 from utils.decay_schedule import LinearDecaySchedule 
 from function_approximator.perceptron import SLP
-env = gym.make("CartPole-v0")
+env = gym.make("CartPole-v1", render_mode='human')
 MAX_NUM_EPISODES = 100000
 MAX_STEPS_PER_EPISODE = 300
 class Shallow_Q_Learner(object):
@@ -48,7 +48,7 @@ class Shallow_Q_Learner(object):
 
 if __name__ == "__main__":
     observation_shape = env.observation_space.shape
-    action_shape = env.action_space.shape
+    action_shape = env.action_space.n
     agent = Shallow_Q_Learner(observation_shape, action_shape)
     first_episode = True
     episode_rewards = list()
