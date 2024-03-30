@@ -53,7 +53,7 @@ if __name__ == "__main__":
     first_episode = True
     episode_rewards = list()
     for episode in range(MAX_NUM_EPISODES):
-        obs = env.reset()
+        obs, info = env.reset()
         cum_reward = 0.0 # Cumulative reward
         # reward = 0.0
         for step in range(MAX_STEPS_PER_EPISODE):
