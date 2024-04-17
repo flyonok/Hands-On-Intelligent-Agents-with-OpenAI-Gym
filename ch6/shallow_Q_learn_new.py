@@ -9,7 +9,8 @@ from utils.experience_memory import Experience
 from function_approximator.perceptron import SLP
 
 env = gym.make("CartPole-v1", render_mode="human")
-MAX_NUM_EPISODES = 100000
+# MAX_NUM_EPISODES = 100000
+MAX_NUM_EPISODES = 100
 MAX_STEPS_PER_EPISODE = 300
 
 

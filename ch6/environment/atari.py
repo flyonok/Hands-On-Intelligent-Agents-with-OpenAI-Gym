@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-import gym
+import gymnasium as gym
 import atari_py
 import numpy as np
 from collections import deque
-from gym.spaces.box import Box
+from gymnasium.spaces.box import Box
 import cv2
 import random
 
@@ -36,6 +36,7 @@ def make_env(env_id, env_conf):
     return env
 
 def get_games_list():
+    
     return atari_py.list_games()
 
 

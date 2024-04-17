@@ -4,10 +4,11 @@
 
 from datetime import datetime
 from argparse import ArgumentParser
-import gym
+import gymnasium as gym
 import torch
 import random
 import numpy as np
+import os
 
 import environment.atari as Atari
 import environment.utils as env_utils
@@ -20,8 +21,11 @@ from function_approximator.cnn import CNN
 from tensorboardX import SummaryWriter
 
 args = ArgumentParser("deep_Q_learner")
+full_path = os.path.abspath(__file__)
+directory = os.path.dirname(full_path)
+defaultParm = directory + r'\parameters.json'
 args.add_argument("--params-file", help="Path to the parameters json file. Default is parameters.json",
-                  default="parameters.json", metavar="PFILE")
+                  default=defaultParm, metavar="PFILE")
 args.add_argument("--env", help="ID of the Atari environment available in OpenAI Gym.Default is SeaquestNoFrameskip-v4",
                   default="SeaquestNoFrameskip-v4", metavar="ENV")
 args.add_argument("--gpu-id", help="GPU device ID to use. Default=0", default=0, type=int, metavar="GPU_ID")
@@ -155,7 +159,8 @@ class Deep_Q_Learner(object):
                 self.Q(next_obs_batch).detach().max(1)[0].data.cpu().numpy()
 
         td_target = torch.from_numpy(td_target).to(device)
-        action_idx = torch.from_numpy(action_batch).to(device)
+        # action_idx = torch.from_numpy(action_batch).to(device)
+        action_idx = torch.from_numpy(action_batch).to(device).type(torch.int64)
         td_error = torch.nn.functional.mse_loss( self.Q(obs_batch).gather(1, action_idx.view(-1, 1)),
                                                        td_target.float().unsqueeze(1))
 
@@ -247,7 +252,7 @@ if __name__ == "__main__":
     #for episode in range(agent_params['max_num_episodes']):
     episode = 0
     while global_step_num <= agent_params['max_training_steps']:
-        obs = env.reset()
+        obs, info = env.reset()
         cum_reward = 0.0  # Cumulative reward
         done = False
         step = 0
@@ -256,7 +261,7 @@ if __name__ == "__main__":
             if env_conf['render'] or args.render:
                 env.render()
             action = agent.get_action(obs)
-            next_obs, reward, done, info = env.step(action)
+            next_obs, reward, done, trucated, info = env.step(action)
             #agent.learn(obs, action, reward, next_obs, done)
             agent.memory.store(Experience(obs, action, reward, next_obs, done))
 
