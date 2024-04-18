@@ -1,9 +1,9 @@
 {
   "agent": {
-    "max_training_steps": 10e6,
+    "max_training_steps": 10e4,
     "epsilon_decay_final_step": 1000000,
     "experience_memory_capacity": 1e5,
-    "replay_start_size": 50000,
+    "replay_start_size": 500,
     "replay_batch_size": 32,
     "use_target_network": true,
     "target_network_update_freq": 10000,

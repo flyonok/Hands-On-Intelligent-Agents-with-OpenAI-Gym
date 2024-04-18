@@ -23,7 +23,7 @@ from tensorboardX import SummaryWriter
 args = ArgumentParser("deep_Q_learner")
 full_path = os.path.abspath(__file__)
 directory = os.path.dirname(full_path)
-defaultParm = directory + r'\parameters.json'
+defaultParm = directory + os.sep + 'parameters.json'
 args.add_argument("--params-file", help="Path to the parameters json file. Default is parameters.json",
                   default=defaultParm, metavar="PFILE")
 args.add_argument("--env", help="ID of the Atari environment available in OpenAI Gym.Default is SeaquestNoFrameskip-v4",
@@ -41,7 +41,7 @@ args = args.parse_args()
 params_manager= ParamsManager(args.params_file)
 seed = params_manager.get_agent_params()['seed']
 summary_file_path_prefix = params_manager.get_agent_params()['summary_file_path_prefix']
-summary_file_path= summary_file_path_prefix + args.env+ "_" + datetime.now().strftime("%y-%m-%d-%H-%M")
+summary_file_path= directory + os.sep + summary_file_path_prefix + args.env+ "_" + datetime.now().strftime("%y-%m-%d-%H-%M")
 writer = SummaryWriter(summary_file_path)
 # Export the parameters as json files to the log directory to keep track of the parameters used in each experiment
 params_manager.export_env_params(summary_file_path + "/" + "env_params.json")
@@ -176,10 +176,12 @@ class Deep_Q_Learner(object):
         self.training_steps_completed += 1  # Increment the number of training batch steps complemented
 
     def save(self, env_name):
-        file_name = self.params['save_dir'] + "DQL_" + env_name + ".ptm"
+        full_path = os.path.abspath(__file__)
+        directory = os.path.dirname(full_path)
+        file_name = directory + os.sep + self.params['save_dir'] + "DQL_" + env_name + ".ptm"
         agent_state = {"Q": self.Q.state_dict(),
                        "best_mean_reward": self.best_mean_reward,
-                       "best_reward": self.best_reward};
+                       "best_reward": self.best_reward}
         torch.save(agent_state, file_name)
         print("Agent's state saved to ", file_name)
 

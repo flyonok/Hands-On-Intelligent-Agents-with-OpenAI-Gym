@@ -6,3 +6,5 @@
 #Python intermediate files
 __pycache__
 *.pyc
+*.ptm
+logs
